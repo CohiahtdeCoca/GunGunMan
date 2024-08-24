@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
         LevelScreen.SetActive(true);
         MainScreen.SetActive(false);
         PlayerScreen.SetActive(false);
+        return;
     }
 
     public void ShowMainScreen()
