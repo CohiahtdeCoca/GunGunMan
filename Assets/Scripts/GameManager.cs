@@ -1,14 +1,12 @@
+using System;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public GameObject HomeScreen;
     public GameObject LevelScreen;
     public GameObject MainScreen;
     public GameObject PlayerScreen;
-
-    public GameObject[] MainPopup;
-    public GameObject[] MainButton;
 
     void Start()
     {
@@ -17,26 +15,41 @@ public class GameManager : MonoBehaviour
 
     public void ShowHomeScreen()
     {
-        HomeScreen.SetActive(true);
-        LevelScreen.SetActive(false);
-        MainScreen.SetActive(false);
-        PlayerScreen.SetActive(false);
+        SetActiveScreen(HomeScreen);
+        AddButtonListener(HomeScreen, ShowLevelScreen);
     }
 
     public void ShowLevelScreen()
     {
-        HomeScreen.SetActive(false);
-        LevelScreen.SetActive(true);
-        MainScreen.SetActive(false);
-        PlayerScreen.SetActive(false);
-        return;
+        SetActiveScreen(LevelScreen);
+        AddButtonListener(LevelScreen.transform.Find("BackButton").gameObject, ShowHomeScreen);
     }
 
     public void ShowMainScreen()
     {
-        HomeScreen.SetActive(false);
-        LevelScreen.SetActive(false);
-        MainScreen.SetActive(true);
+        SetActiveScreen(MainScreen);
         PlayerScreen.SetActive(true);
+        UIHelper.AddButtonListener(MainScreen, "BackButton", ShowLevelScreen);
+        UIHelper.AddButtonListener(MainScreen, "PauseButton", PauseGame);
+    }
+
+    private void SetActiveScreen(GameObject screen)
+    {
+        HomeScreen.SetActive(screen == HomeScreen);
+        LevelScreen.SetActive(screen == LevelScreen);
+        MainScreen.SetActive(screen == MainScreen);
+        PlayerScreen.SetActive(screen == PlayerScreen);
+    }
+
+    private void AddButtonListener(GameObject buttonObject, Action action)
+    {
+        Button button = buttonObject.GetComponent<Button>() ?? buttonObject.AddComponent<Button>();
+        button.onClick.AddListener(() => action());
+    }
+
+    private void PauseGame()
+    {
+        // Add your logic to pause the game here
+        Debug.Log("Game paused");
     }
 }
