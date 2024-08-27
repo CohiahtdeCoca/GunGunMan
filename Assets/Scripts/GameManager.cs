@@ -1,55 +1,79 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+
 public class GameManager : MonoBehaviour
 {
-    public GameObject HomeScreen;
-    public GameObject LevelScreen;
-    public GameObject MainScreen;
-    public GameObject PlayerScreen;
+    public enum ScreenType { Home, Level, Main, Player }
+    private bool isPaused = false;
 
-    void Start()
+    [SerializeField] private UIManager _uiManager;
+    [SerializeField] private CharacterManager _characterManager;
+    [SerializeField] private TurnManager _turnManager;
+
+    private void Start()
     {
-        ShowHomeScreen();
+        ShowScreen(ScreenType.Home);
     }
 
-    public void ShowHomeScreen()
+    public void ShowScreen(ScreenType screenType)
     {
-        SetActiveScreen(HomeScreen);
-        AddButtonListener(HomeScreen, ShowLevelScreen);
+        _uiManager.ShowScreen(screenType);
+
+        if (screenType == ScreenType.Main)
+        {
+            _characterManager.InitializeCharacters();
+            _characterManager.ShowCharacters(true);
+        }
+        else
+        {
+            _characterManager.ShowCharacters(false);
+        }
     }
 
-    public void ShowLevelScreen()
+    public void PauseGame()
     {
-        SetActiveScreen(LevelScreen);
-        AddButtonListener(LevelScreen.transform.Find("BackButton").gameObject, ShowHomeScreen);
+        isPaused = true;
+        Time.timeScale = 0f;
+        _uiManager.ShowPausePopup();
     }
 
-    public void ShowMainScreen()
+    public void ResumeGame()
     {
-        SetActiveScreen(MainScreen);
-        PlayerScreen.SetActive(true);
-        UIHelper.AddButtonListener(MainScreen, "BackButton", ShowLevelScreen);
-        UIHelper.AddButtonListener(MainScreen, "PauseButton", PauseGame);
+        isPaused = false;
+        Time.timeScale = 1f;
+        _uiManager.HidePausePopup();
     }
 
-    private void SetActiveScreen(GameObject screen)
+    public void CompleteLevel()
     {
-        HomeScreen.SetActive(screen == HomeScreen);
-        LevelScreen.SetActive(screen == LevelScreen);
-        MainScreen.SetActive(screen == MainScreen);
-        PlayerScreen.SetActive(screen == PlayerScreen);
+        Time.timeScale = 0f;
+        _uiManager.ShowCompletePopup();
     }
 
-    private void AddButtonListener(GameObject buttonObject, Action action)
+    public void FailLevel()
     {
-        Button button = buttonObject.GetComponent<Button>() ?? buttonObject.AddComponent<Button>();
-        button.onClick.AddListener(() => action());
+        Time.timeScale = 0f;
+        _uiManager.ShowFailPopup();
     }
 
-    private void PauseGame()
+    public void NextLevel()
     {
-        // Add your logic to pause the game here
-        Debug.Log("Game paused");
+        Time.timeScale = 1f;
+        ResetLevel();
+        _uiManager.ShowGameScreen();
+    }
+
+    public void ReplayLevel()
+    {
+        Time.timeScale = 1f;
+        ResetLevel();
+        _uiManager.ShowGameScreen();
+    }
+
+    private void ResetLevel()
+    {
+        _characterManager.ResetPositions();
+        _turnManager.ResetTurns();
+        // Reset any other necessary game state here
     }
 }
