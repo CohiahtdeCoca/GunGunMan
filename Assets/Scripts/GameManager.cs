@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     private bool isPaused = false;
 
     [SerializeField] private UIManager _uiManager;
-    [SerializeField] private CharacterManager _characterManager;
+    // [SerializeField] private CharacterManager _characterManager;
     [SerializeField] private TurnManager _turnManager;
 
     private void Start()
@@ -21,12 +21,12 @@ public class GameManager : MonoBehaviour
 
         if (screenType == ScreenType.Main)
         {
-            _characterManager.InitializeCharacters();
-            _characterManager.ShowCharacters(true);
+            // _characterManager.InitializeCharacters();
+            // _characterManager.ShowCharacters(true);
         }
         else
         {
-            _characterManager.ShowCharacters(false);
+            // _characterManager.ShowCharacters(false);
         }
     }
 
@@ -48,7 +48,9 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0f;
         _uiManager.ShowCompletePopup();
+        FindObjectOfType<LevelManager>().UnlockNextLevel(); // Mở khóa level tiếp theo
     }
+
 
     public void FailLevel()
     {
@@ -72,7 +74,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetLevel()
     {
-        _characterManager.ResetPositions();
+        // _characterManager.ResetPositions();
         _turnManager.ResetTurns();
         // Reset any other necessary game state here
     }

@@ -1,56 +1,33 @@
+using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TurnManager : MonoBehaviour
 {
-    public int totalTurns = 5;
     private int currentTurn;
-    public Image[] turnIcons; // Array of UI Images representing turns
+    private int totalTurns;
 
-    void Start()
+    public void InitializeTurns(int turns)
     {
-        currentTurn = totalTurns;
-        UpdateTurnIcons();
+        totalTurns = turns;
+        currentTurn = 0;
     }
 
-    public void UseTurn()
+    public void NextTurn()
     {
-        if (currentTurn > 0)
+        currentTurn++;
+        if (currentTurn >= totalTurns)
         {
-            currentTurn--;
-            UpdateTurnIcons();
-
-            if (currentTurn == 0)
-            {
-                GameOver();
-            }
+            EndTurns();
         }
     }
 
     public void ResetTurns()
     {
-        currentTurn = totalTurns;
-        UpdateTurnIcons();
+        currentTurn = 0;
     }
 
-    void UpdateTurnIcons()
+    private void EndTurns()
     {
-        for (int i = 0; i < turnIcons.Length; i++)
-        {
-            if (i < currentTurn)
-            {
-                turnIcons[i].color = Color.white; // Active turn
-            }
-            else
-            {
-                turnIcons[i].color = Color.gray; // Used turn
-            }
-        }
-    }
-
-    void GameOver()
-    {
-        // Show fail popup
-        // FindObjectOfType<UIManager>().ShowFailPopup();
+        // Logic to handle end of turns
     }
 }

@@ -5,36 +5,20 @@ public static class UIHelper
 {
     public static void AddButtonListener(GameObject parent, string buttonName, UnityEngine.Events.UnityAction action)
     {
-        Transform buttonTransform = parent.transform.Find(buttonName);
-        if (buttonTransform != null)
+        Button button = FindButton(parent, buttonName);
+        if (button != null)
         {
-            Button button = buttonTransform.GetComponent<Button>() ?? buttonTransform.gameObject.AddComponent<Button>();
+            button.onClick.RemoveAllListeners(); // Đảm bảo không có sự kiện nào khác được gán trước đó
             button.onClick.AddListener(action);
-        }
-        else
-        {
-            Debug.LogWarning("Button " + buttonName + " not found in " + parent.name);
         }
     }
 
     public static void SetButtonInteractable(GameObject parent, string buttonName, bool interactable)
     {
-        Transform buttonTransform = parent.transform.Find(buttonName);
-        if (buttonTransform != null)
+        Button button = FindButton(parent, buttonName);
+        if (button != null)
         {
-            Button button = buttonTransform.GetComponent<Button>();
-            if (button != null)
-            {
-                button.interactable = interactable;
-            }
-            else
-            {
-                Debug.LogWarning("Button component not found on " + buttonName);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Button " + buttonName + " not found in " + parent.name);
+            button.interactable = interactable;
         }
     }
 
@@ -56,6 +40,48 @@ public static class UIHelper
         else
         {
             Debug.LogWarning("Button " + buttonName + " not found in " + parent.name);
+        }
+    }
+
+    public static void SetButtonText(GameObject parent, string buttonName, string text)
+    {
+        Button button = FindButton(parent, buttonName);
+        if (button != null)
+        {
+            Text buttonText = button.GetComponentInChildren<Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = text;
+            }
+            else
+            {
+                Debug.LogWarning("Text component not found on " + buttonName);
+            }
+        }
+    }
+
+    public static void SetButtonColor(GameObject parent, string buttonName, Color color)
+    {
+        Button button = FindButton(parent, buttonName);
+        if (button != null)
+        {
+            ColorBlock colorBlock = button.colors;
+            colorBlock.normalColor = color;
+            button.colors = colorBlock;
+        }
+    }
+
+    private static Button FindButton(GameObject parent, string buttonName)
+    {
+        Transform buttonTransform = parent.transform.Find(buttonName);
+        if (buttonTransform != null)
+        {
+            return buttonTransform.GetComponent<Button>() ?? buttonTransform.gameObject.AddComponent<Button>();
+        }
+        else
+        {
+            Debug.LogWarning("Button " + buttonName + " not found in " + parent.name);
+            return null;
         }
     }
 }

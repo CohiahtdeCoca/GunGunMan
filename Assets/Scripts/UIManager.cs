@@ -1,117 +1,84 @@
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public GameObject levelButtonPrefab;
-    public GameObject homeButtonPrefab;
-    public GameObject soundButtonPrefab;
+    public GameObject tapToPlayButtonObject; // GameObject cho nút "Tap to Play"
+    public GameObject levelSelectPanelObject; // GameObject cho Panel chọn level
+    public GameObject backButtonObject; // GameObject cho nút "Back"
 
-    public GameObject popupPause;
-    public GameObject popupComplete;
-    public GameObject popupFail;
-
-    private GameManager _gameManager;
-
-    public GameObject homeScreen;
-    public GameObject levelSelectScreen;
-    public GameObject gameScreen;
-   
-
-    private void Start()
+    void Start()
     {
-        _gameManager = FindObjectOfType<GameManager>();
-    }
+        UIHelper.AddButtonListener(tapToPlayButtonObject, "TapToPlayButton", OnTapToPlayButtonPressed);
+        UIHelper.AddButtonListener(backButtonObject, "BackButton", OnBackButtonPressed);
 
-    public void ShowScreen(GameManager.ScreenType screenType)
-    {
-        homeScreen.SetActive(screenType == GameManager.ScreenType.Home);
-        levelSelectScreen.SetActive(screenType == GameManager.ScreenType.Level);
-        gameScreen.SetActive(screenType == GameManager.ScreenType.Main);
-        popupPause.SetActive(false);
-        popupComplete.SetActive(false);
-        popupFail.SetActive(false);
-
-        switch (screenType)
+        // Thêm Button cho từng level
+        for (int i = 1; i <= 21; i++)
         {
-            case GameManager.ScreenType.Home:
-                UIHelper.AddButtonListener(homeScreen, "StartButton", () => ShowScreen(GameManager.ScreenType.Level));
-                break;
-            case GameManager.ScreenType.Level:
-                UIHelper.AddButtonListener(levelSelectScreen, "BackButton", () => ShowScreen(GameManager.ScreenType.Home));
-                break;
-            case GameManager.ScreenType.Main:
-                UIHelper.AddButtonListener(gameScreen, "BackButton", () => ShowScreen(GameManager.ScreenType.Level));
-                UIHelper.AddButtonListener(gameScreen, "PauseButton", _gameManager.PauseGame);
-                break;
+            string buttonName = "Level" + i + "Button";
+            UIHelper.AddButtonListener(levelSelectPanelObject, buttonName, () => LoadLevel(i));
+            UIHelper.SetButtonText(levelSelectPanelObject, buttonName, "Level " + i);
         }
+
+        ShowMainMenu();
     }
 
-    public void ShowPausePopup()
+    void ShowMainMenu()
     {
-        popupPause.SetActive(true);
+        tapToPlayButtonObject.SetActive(true);
+        levelSelectPanelObject.SetActive(false);
     }
 
-    public void HidePausePopup()
+    void ShowLevelSelect()
     {
-        popupPause.SetActive(false);
+        tapToPlayButtonObject.SetActive(false);
+        levelSelectPanelObject.SetActive(true);
     }
 
-    public void ShowCompletePopup()
+    void OnTapToPlayButtonPressed()
     {
-        popupComplete.SetActive(true);
+        ShowLevelSelect();
     }
 
-    public void ShowFailPopup()
+    void OnBackButtonPressed()
     {
-        popupFail.SetActive(true);
+        ShowMainMenu();
     }
 
-    public void ShowGameScreen()
+    void LoadLevel(int level)
     {
-        ShowScreen(GameManager.ScreenType.Main);
+        Debug.Log("Loading Level " + level);
+        // Thêm mã để tải level tương ứng
     }
 
-    public void AddButtonToPopup(GameObject popup)
+    internal void ShowScreen(GameManager.ScreenType screenType)
     {
-        GameObject levelButton = Instantiate(levelButtonPrefab, popup.transform);
-        levelButton.name = "LevelButton";
-        AddButtonComponent(levelButton);
-        UIHelper.AddButtonListener(levelButton, "LevelButton", OnLevelButtonClicked);
-
-        GameObject homeButton = Instantiate(homeButtonPrefab, popup.transform);
-        homeButton.name = "HomeButton";
-        AddButtonComponent(homeButton);
-        UIHelper.AddButtonListener(homeButton, "HomeButton", OnHomeButtonClicked);
-
-        GameObject soundButton = Instantiate(soundButtonPrefab, popup.transform);
-        soundButton.name = "SoundButton";
-        AddButtonComponent(soundButton);
-        UIHelper.AddButtonListener(soundButton, "SoundButton", OnSoundButtonClicked);
+        throw new NotImplementedException();
     }
 
-    private void OnLevelButtonClicked()
+    internal void ShowPausePopup()
     {
-        _gameManager.ShowScreen(GameManager.ScreenType.Level);
+        throw new NotImplementedException();
     }
 
-    private void OnHomeButtonClicked()
+    internal void HidePausePopup()
     {
-        _gameManager.ShowScreen(GameManager.ScreenType.Home);
+        throw new NotImplementedException();
     }
 
-    private void OnSoundButtonClicked()
+    internal void ShowCompletePopup()
     {
-        Debug.Log("Sound Button Clicked!");
+        throw new NotImplementedException();
     }
 
-    private void AddButtonComponent(GameObject button)
+    internal void ShowFailPopup()
     {
-        if (button.GetComponent<Button>() == null)
-        {
-            button.AddComponent<Button>();
-        }
+        throw new NotImplementedException();
+    }
+
+    internal void ShowGameScreen()
+    {
+        throw new NotImplementedException();
     }
 }
