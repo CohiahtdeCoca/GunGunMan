@@ -1,34 +1,84 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public enum ScreenType { Home, Level, Main, Player }
+    public GameObject HomeScreen;
+    public GameObject LevelScreen;
+    public GameObject GameScreen;
+    public enum ScreenType { Home, Level, Game }
+    private bool isCreated = false;
     private bool isPaused = false;
 
     [SerializeField] private UIManager _uiManager;
+    [SerializeField] private LevelManager _levelManager;
     // [SerializeField] private CharacterManager _characterManager;
-    [SerializeField] private TurnManager _turnManager;
+    // [SerializeField] private TurnManager _turnManager;
 
     private void Start()
     {
-        ShowScreen(ScreenType.Home);
+        ChangeScreen(ScreenType.Home);
     }
 
-    public void ShowScreen(ScreenType screenType)
+    public void ChangeScreen(ScreenType screenType)
     {
-        _uiManager.ShowScreen(screenType);
+        HomeScreen.SetActive(false);
+        LevelScreen.SetActive(false);
+        GameScreen.SetActive(false);
 
-        if (screenType == ScreenType.Main)
+        switch (screenType)
         {
-            // _characterManager.InitializeCharacters();
-            // _characterManager.ShowCharacters(true);
-        }
-        else
-        {
-            // _characterManager.ShowCharacters(false);
+            case ScreenType.Home:
+                // Tải màn hình chính
+                LoadHomeScreen();
+                break;
+            case ScreenType.Level:
+                // Tải màn hình chọn cấp độ
+                LoadLevelScreen();
+                break;
+            case ScreenType.Game:
+                // Tải màn hình chơi game
+                LoadGameScreen();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(screenType), screenType, null);
         }
     }
+
+    private void LoadHomeScreen()
+    {
+        HomeScreen.SetActive(true);
+        UIHelper.AddButtonListener(HomeScreen, "StartButton", ()=> ChangeScreen(ScreenType.Level));
+
+
+    }
+
+    private void LoadLevelScreen()
+    {
+        // Code để tải màn hình chọn cấp độ
+        LevelScreen.SetActive(true);
+        if(isCreated==false){
+            _levelManager.CreateLevelButtons();
+            
+            isCreated = true;
+
+        }
+
+
+        UIHelper.AddButtonListener(LevelScreen, "BackButton", () => ChangeScreen(ScreenType.Home));
+
+
+    }
+
+    private void LoadGameScreen()
+    {
+        // Code để tải màn hình chơi game
+        GameScreen.SetActive(true);
+    }
+
+
 
     public void PauseGame()
     {
@@ -48,7 +98,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0f;
         _uiManager.ShowCompletePopup();
-        FindObjectOfType<LevelManager>().UnlockNextLevel(); // Mở khóa level tiếp theo
+        
     }
 
 
@@ -62,20 +112,19 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         ResetLevel();
-        _uiManager.ShowGameScreen();
+        
     }
 
     public void ReplayLevel()
     {
         Time.timeScale = 1f;
         ResetLevel();
-        _uiManager.ShowGameScreen();
     }
 
     private void ResetLevel()
     {
         // _characterManager.ResetPositions();
-        _turnManager.ResetTurns();
+        // _turnManager.ResetTurns();
         // Reset any other necessary game state here
     }
 }
