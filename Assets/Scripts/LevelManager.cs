@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class LevelManager : MonoBehaviour
 {
     //Level
-    public GameObject[] levels;
     public Sprite enabledSprite;
     public Sprite disabledSprite;
     public Sprite enabledSpriteTurns;
@@ -16,11 +15,18 @@ public class LevelManager : MonoBehaviour
     public int numberOfLevels = 21;
     private int currentLevel;
     private bool isCreated= false;
-
+    [SerializeField]  private GameManager _gameManager;
     //Prefabs
-    public string prefabPath = "Assets/Resources/Prefabs/Levels";
+    private void Awake()
+    {
+        // Initialize _gameManager here
+        _gameManager = FindObjectOfType<GameManager>();
 
-
+        if (_gameManager == null)
+        {
+            Debug.LogError("GameManager not found!");
+        }
+    }
 
     public void CreateLevelButtons()
     {
@@ -32,34 +38,30 @@ public class LevelManager : MonoBehaviour
             Button buttonComponent = newLevelButton.GetComponent<Button>();
             Image buttonImage = newLevelButton.GetComponent<Image>();
 
-            int levelIndex = i - 1;
+            int levelIndex = i;
 
-            if(i == 1){
+            if (i == 1)
+            {
                 buttonComponent.interactable = true;
                 buttonImage.sprite = enabledSprite;
             }
-            else{
+            else
+            {
                 buttonComponent.interactable = false;
                 buttonImage.sprite = disabledSprite;
             }
-            buttonComponent.onClick.AddListener(()=>{
-                LoadPrefabs();
 
+            buttonComponent.onClick.AddListener(() =>
+            {
+                if (_gameManager != null)
+                {
+                    _gameManager.ChangeScreen(GameManager.ScreenType.Game);
+                }
+                else
+                {
+                    Debug.LogError("_gameManager is null!");
+                }
             });
-
         }
-        
-    }
-
-    private void LoadPrefabs()
-    {
-        string buttonName = transform.name;
-        string prefabName = buttonName.Replace("Level ", "");
-
-        GameObject levelPrefab = Resources.Load<GameObject>(prefabPath + prefabName);
-        if(levelPrefab != null){
-            Instantiate(levelPrefab);
-        }
-        Debug.LogWarning("Prefab not found: " + prefabName);
     }
 }
