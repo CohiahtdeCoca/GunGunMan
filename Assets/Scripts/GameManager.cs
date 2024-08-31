@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         LevelScreen.SetActive(false);
         GameScreen.SetActive(false);
         _uiManager.HideAllsPopup();
+        _characterManager.SetGameScreenReady(false);
 
         switch (screenType)
         {
@@ -95,6 +96,7 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("Prefab not found: " + prefabName);
         }
         _characterManager.InitializeCharacters();
+        _characterManager.SetGameScreenReady(true);
         UIHelper.AddButtonListener(GameScreen,"BackButton", () =>ChangeScreen(ScreenType.Level));
         UIHelper.AddButtonListener(GameScreen,"PauseButton", () =>{
             _uiManager.ShowPausePopup();
